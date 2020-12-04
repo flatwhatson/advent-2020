@@ -16,3 +16,12 @@
 [submodule "external/srfi-158"]
 	path = external/srfi-158
 	url = https://github.com/scheme-requests-for-implementation/srfi-158.git
+[submodule "external/srfi-115"]
+	path = external/srfi-115
+	url = https://github.com/scheme-requests-for-implementation/srfi-115.git
+[submodule "external/srfi-151"]
+	path = external/srfi-151
+	url = https://github.com/scheme-requests-for-implementation/srfi-151.git
+[submodule "external/srfi-130"]
+	path = external/srfi-130
+	url = https://github.com/scheme-requests-for-implementation/srfi-130.git
