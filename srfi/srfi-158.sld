@@ -1,6 +1,4 @@
-;;; Use the SRFI-158 reference implementation to provide (scheme generator)
-
-(define-library (scheme generator)
+(define-library (srfi srfi-158)
 
   (export generator circular-generator make-iota-generator make-range-generator
           make-coroutine-generator list->generator vector->generator
@@ -24,4 +22,7 @@
           string-accumulator bytevector-accumulator bytevector-accumulator!
           sum-accumulator product-accumulator)
 
-  (import (srfi srfi-158)))
+  (import (scheme base)
+          (scheme case-lambda))
+
+  (include "../external/srfi-158/srfi-158-impl.scm"))
