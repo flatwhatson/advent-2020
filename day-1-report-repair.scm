@@ -4,19 +4,8 @@
         (scheme comparator)
         (scheme hash-table)
         (scheme list)
-        (scheme set))
-
-(define (read-numbers-from-port port)
-  (let loop ((nums '()))
-    (let ((line (read-line port)))
-      (if (eof-object? line) nums
-          (loop (cons (string->number line) nums))))))
-
-(define (read-numbers-from-file file)
-  (let* ((port (open-input-file file))
-         (numbers (read-numbers-from-port port)))
-    (close-port port)
-    numbers))
+        (scheme set)
+        (advent-utils))
 
 (define number-comparator
   (make-comparator number? = < number-hash))
@@ -58,8 +47,8 @@
                      (else #f))))
     (if proc
         (let* ((file (second args))
-               (numbers (read-numbers-from-file file))
-               (result (proc numbers)))
+               (lines (file->lines file))
+               (result (proc (map string->number lines))))
           (write result)
           (newline))
         (print-usage args))))

@@ -2,20 +2,8 @@
 !# ; -*- mode: scheme -*-
 (import (scheme base)
         (scheme list)
-        (scheme regex))
-
-(define (read-lines port)
-  (let loop ((lines '()))
-    (let ((line (read-line port)))
-      (if (eof-object? line)
-          (reverse! lines)
-          (loop (cons line lines))))))
-
-(define (read-lines-from-file file)
-  (let* ((port (open-input-file file))
-         (lines (read-lines port)))
-    (close-port port)
-    lines))
+        (scheme regex)
+        (advent-utils))
 
 (define (parse-policy-line line)
   (let ((m (regexp-matches '(: ($ (+ num)) "-"
@@ -62,7 +50,7 @@
                      (else #f))))
     (if proc
         (let* ((file (second args))
-               (lines (read-lines-from-file file))
+               (lines (file->lines file))
                (result (count proc lines)))
           (write result)
           (newline))

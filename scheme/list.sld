@@ -4,58 +4,58 @@
 
   (export
 ;;; Constructors
-   ;; cons				<= in the core
-   ;; list				<= in the core
+   cons
+   list
    xcons
-   ;; cons*				<= in the core
-   ;; make-list				<= in the core
+   cons*
+   make-list
    list-tabulate
    list-copy
    circular-list
-   ;; iota				<= in the core
+   iota
 
 ;;; Predicates
    proper-list?
    circular-list?
    dotted-list?
-   ;; pair?				<= in the core
-   ;; null?				<= in the core
+   pair?
+   null?
    null-list?
    not-pair?
    list=
 
 ;;; Selectors
-   ;; car				<= in the core
-   ;; cdr				<= in the core
-   ;; caar				<= in the core
-   ;; cadr				<= in the core
-   ;; cdar				<= in the core
-   ;; cddr				<= in the core
-   ;; caaar				<= in the core
-   ;; caadr				<= in the core
-   ;; cadar				<= in the core
-   ;; caddr				<= in the core
-   ;; cdaar				<= in the core
-   ;; cdadr				<= in the core
-   ;; cddar				<= in the core
-   ;; cdddr				<= in the core
-   ;; caaaar				<= in the core
-   ;; caaadr				<= in the core
-   ;; caadar				<= in the core
-   ;; caaddr				<= in the core
-   ;; cadaar				<= in the core
-   ;; cadadr				<= in the core
-   ;; caddar				<= in the core
-   ;; cadddr				<= in the core
-   ;; cdaaar				<= in the core
-   ;; cdaadr				<= in the core
-   ;; cdadar				<= in the core
-   ;; cdaddr				<= in the core
-   ;; cddaar				<= in the core
-   ;; cddadr				<= in the core
-   ;; cdddar				<= in the core
-   ;; cddddr				<= in the core
-   ;; list-ref				<= in the core
+   car
+   cdr
+   caar
+   cadr
+   cdar
+   cddr
+   caaar
+   caadr
+   cadar
+   caddr
+   cdaar
+   cdadr
+   cddar
+   cdddr
+   caaaar
+   caaadr
+   caadar
+   caaddr
+   cadaar
+   cadadr
+   caddar
+   cadddr
+   cdaaar
+   cdaadr
+   cdadar
+   cdaddr
+   cddaar
+   cddadr
+   cdddar
+   cddddr
+   list-ref
    first
    second
    third
@@ -76,17 +76,17 @@
    split-at
    split-at!
    last
-   ;; last-pair				<= in the core
+   last-pair
 
 ;;; Miscelleneous: length, append, concatenate, reverse, zip & count
-   ;; length				<= in the core
+   length
    length+
-   ;; append				<= in the core
-   ;; append!				<= in the core
+   append
+   append!
    concatenate
    concatenate!
-   ;; reverse				<= in the core
-   ;; reverse!				<= in the core
+   reverse
+   reverse!
    append-reverse
    append-reverse!
    zip
@@ -106,20 +106,20 @@
    reduce-right
    unfold
    unfold-right
-   ;; map				; Extended.
-   ;; for-each				; Extended.
+   map
+   for-each
    append-map
    append-map!
    map!
-   ;; map-in-order			; Extended.
+   map-in-order
    pair-for-each
    filter-map
 
 ;;; Filtering & partitioning
-   ;; filter				<= in the core
+   filter
    partition
    remove
-   ;; filter!				<= in the core
+   filter!
    partition!
    remove!
 
@@ -135,21 +135,21 @@
    break!
    any
    every
-   ;; list-index			; Extended.
-   ;; member				; Extended.
-   ;; memq				<= in the core
-   ;; memv				<= in the core
+   list-index
+   member
+   memq
+   memv
 
 ;;; Deletion
-   ;; delete				; Extended.
-   ;; delete!				; Extended.
+   delete
+   delete!
    delete-duplicates
    delete-duplicates!
 
 ;;; Association lists
-   ;; assoc				; Extended.
-   ;; assq				<= in the core
-   ;; assv				<= in the core
+   assoc
+   assq
+   assv
    alist-cons
    alist-copy
    alist-delete
@@ -171,8 +171,8 @@
    lset-diff+intersection!
 
 ;;; Primitive side-effects
-   ;; set-car!				<= in the core
-   ;; set-cdr!				<= in the core
+   set-car!
+   set-cdr!
    )
 
   (import (srfi srfi-1)))
