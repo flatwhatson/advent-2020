@@ -37,5 +37,5 @@
 (run-advent-program
  check-policy-1
  check-policy-2
- (lambda (file valid)
-   (count valid (file->lines file))))
+ (lambda (valid)
+   (count valid (file->lines "data/day-2.txt"))))

@@ -34,5 +34,5 @@
 (run-advent-program
  find-matching-two
  find-matching-three
- (lambda (file process)
-   (process (map string->number (file->lines file)))))
+ (lambda (process)
+   (process (map string->number (file->lines "data/day-1.txt")))))

@@ -27,5 +27,5 @@
 (run-advent-program
  check-first-trajectory
  check-all-trajectories
- (lambda (file process)
-   (process (list->vector (file->lines file)))))
+ (lambda (process)
+   (process (list->vector (file->lines "data/day-3.txt")))))

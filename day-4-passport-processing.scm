@@ -77,5 +77,5 @@
 (run-advent-program
  process-passports-1
  process-passports-2
- (lambda (file process)
-   (process (parse-passports (file->lines file)))))
+ (lambda (process)
+   (process (parse-passports (file->lines "data/day-4.txt")))))
