@@ -1,4 +1,4 @@
-#!/usr/bin/env -S guile --r7rs -e main -s
+#!/usr/bin/env -S guile --r7rs -s
 !# ; -*- mode: scheme -*-
 (import (scheme base)
         (scheme list)
@@ -24,24 +24,18 @@
                (lines (cdr lines)))
           (loop lines record records)))))
 
-(define (process-passports lines)
+(define (process-passports-1 lines)
   (count (lambda (passport)
            (every (lambda (field)
                     (assoc field passport string=?))
                   '("byr" "iyr" "eyr" "hgt" "hcl" "ecl" "pid")))
          (parse-passports lines)))
 
-(define (print-usage args)
-  (let ((prog (first args)))
-    (display (string-append "usage: " prog " <input-file>\n")
-             (current-error-port))))
+(define (process-passports-2 lines)
+  #t)
 
-(define (main args)
-  (let ((argc (length args)))
-    (if (= argc 2)
-        (let* ((file (second args))
-               (lines (file->lines file))
-               (result (process-passports lines)))
-          (write result)
-          (newline))
-        (print-usage args))))
+(run-advent-program
+ process-passports-1
+ process-passports-2
+ (lambda (file process)
+   (process (file->lines file))))

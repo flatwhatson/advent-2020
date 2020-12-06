@@ -1,4 +1,4 @@
-#!/usr/bin/env -S guile --r7rs -e main -s
+#!/usr/bin/env -S guile --r7rs -s
 !# ; -*- mode: scheme -*-
 (import (scheme base)
         (scheme list)
@@ -24,24 +24,8 @@
                 '(1 3 5 7 1)
                 '(1 1 1 1 2))))
 
-(define (print-usage args)
-  (let ((prog (first args)))
-    (display (string-append "usage: " prog " <input-file> [1-or-2]\n")
-             (current-error-port))))
-
-(define (main args)
-  (let* ((argc (length args))
-         (proc (cond ((= argc 2)
-                      check-first-trajectory)
-                     ((and (= argc 3) (string=? (third args) "1"))
-                      check-first-trajectory)
-                     ((and (= argc 3) (string=? (third args) "2"))
-                      check-all-trajectories)
-                     (else #f))))
-    (if proc
-        (let* ((file (second args))
-               (lines (file->lines file))
-               (result (proc (list->vector lines))))
-          (write result)
-          (newline))
-        (print-usage args))))
+(run-advent-program
+ check-first-trajectory
+ check-all-trajectories
+ (lambda (file process)
+   (process (list->vector (file->lines file)))))

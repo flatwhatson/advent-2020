@@ -1,4 +1,4 @@
-#!/usr/bin/env -S guile --r7rs -e main -s
+#!/usr/bin/env -S guile --r7rs -s
 !# ; -*- mode: scheme -*-
 (import (scheme base)
         (scheme comparator)
@@ -31,24 +31,8 @@
              (and r (apply * n r))))
          numbers)))
 
-(define (print-usage args)
-  (let ((prog (first args)))
-    (display (string-append "usage: " prog " <input-file> [2-or-3]\n")
-             (current-error-port))))
-
-(define (main args)
-  (let* ((argc (length args))
-         (proc (cond ((= 2 argc)
-                      find-matching-two)
-                     ((and (= 3 argc) (string=? (third args) "2"))
-                      find-matching-two)
-                     ((and (= 3 argc) (string=? (third args) "3"))
-                      find-matching-three)
-                     (else #f))))
-    (if proc
-        (let* ((file (second args))
-               (lines (file->lines file))
-               (result (proc (map string->number lines))))
-          (write result)
-          (newline))
-        (print-usage args))))
+(run-advent-program
+ find-matching-two
+ find-matching-three
+ (lambda (file process)
+   (process (map string->number (file->lines file)))))

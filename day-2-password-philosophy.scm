@@ -1,4 +1,4 @@
-#!/usr/bin/env -S guile --r7rs -e main -s
+#!/usr/bin/env -S guile --r7rs -s
 !# ; -*- mode: scheme -*-
 (import (scheme base)
         (scheme list)
@@ -34,24 +34,8 @@
       (or (and p1 (not p2))
           (and p2 (not p1))))))
 
-(define (print-usage args)
-  (let ((prog (first args)))
-    (display (string-append "usage: " prog " <input-file> [1-or-2]\n")
-             (current-error-port))))
-
-(define (main args)
-  (let* ((argc (length args))
-         (proc (cond ((= 2 argc)
-                      check-policy-1)
-                     ((and (= 3 argc) (string=? (third args) "1"))
-                      check-policy-1)
-                     ((and (= 3 argc) (string=? (third args) "2"))
-                      check-policy-2)
-                     (else #f))))
-    (if proc
-        (let* ((file (second args))
-               (lines (file->lines file))
-               (result (count proc lines)))
-          (write result)
-          (newline))
-        (print-usage args))))
+(run-advent-program
+ check-policy-1
+ check-policy-2
+ (lambda (file valid)
+   (count valid (file->lines file))))
