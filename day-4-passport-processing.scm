@@ -1,0 +1,47 @@
+#!/usr/bin/env -S guile --r7rs -e main -s
+!# ; -*- mode: scheme -*-
+(import (scheme base)
+        (scheme list)
+        (scheme regex)
+        (advent-utils))
+
+(define (parse-passport-line line record)
+  (let loop ((tokens (regexp-split 'space line))
+             (record record))
+    (if (null? tokens)
+        record
+        (let* ((parts (regexp-split #\: (car tokens)))
+               (pair (cons (first parts) (second parts))))
+          (loop (cdr tokens) (cons pair record))))))
+
+(define (parse-passports lines)
+  (let loop ((lines lines) (record '()) (records '()))
+    (if (null? lines)
+        (cons record records)
+        (let* ((end (string=? (car lines) ""))
+               (records (if end (cons record records) records))
+               (record (if end '() (parse-passport-line (car lines) record)))
+               (lines (cdr lines)))
+          (loop lines record records)))))
+
+(define (process-passports lines)
+  (count (lambda (passport)
+           (every (lambda (field)
+                    (assoc field passport string=?))
+                  '("byr" "iyr" "eyr" "hgt" "hcl" "ecl" "pid")))
+         (parse-passports lines)))
+
+(define (print-usage args)
+  (let ((prog (first args)))
+    (display (string-append "usage: " prog " <input-file>\n")
+             (current-error-port))))
+
+(define (main args)
+  (let ((argc (length args)))
+    (if (= argc 2)
+        (let* ((file (second args))
+               (lines (file->lines file))
+               (result (process-passports lines)))
+          (write result)
+          (newline))
+        (print-usage args))))
