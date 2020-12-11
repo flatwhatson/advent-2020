@@ -11,9 +11,10 @@
             (add-to-list 'geiser-guile-binary "--r7rs" 'append)))
 
   (eval . (with-eval-after-load 'geiser-guile
-            (let ((root-dir
-                   (file-name-directory
-                    (locate-dominating-file default-directory ".dir-locals.el"))))
+            (if-let* ((root-dir (locate-dominating-file
+                                   default-directory ".dir-locals.el"))
+                      (root-dir (directory-file-name
+                                 (expand-file-name root-dir))))
               (make-local-variable 'geiser-guile-load-path)
               (add-to-list 'geiser-guile-load-path root-dir))))
   ))
