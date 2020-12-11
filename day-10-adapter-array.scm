@@ -1,9 +1,14 @@
 #!/usr/bin/env -S guile --r7rs -s
 !# ; -*- mode: scheme -*-
 (import (scheme base)
+        (scheme comparator)
         (scheme list)
+        (scheme hash-table)
         (scheme sort)
         (advent-utils))
+
+(define number-comparator
+  (make-comparator number? = < number-hash))
 
 (define (process-joltages-1 numbers)
   (let* ((nums (list-sort! < numbers))
@@ -13,13 +18,37 @@
       (if (null? nums)
           (* (vector-ref diffs 1)
              (vector-ref diffs 3))
-      (let* ((num (car nums))
-             (diff (- num jolt)))
-        (vector-set! diffs diff (+ (vector-ref diffs diff) 1))
-        (loop (cdr nums) num))))))
+          (let* ((num (car nums))
+                 (diff (- num jolt))
+                 (count (+ (vector-ref diffs diff) 1)))
+            (vector-set! diffs diff count)
+            (loop (cdr nums) num))))))
+
+(define (permutations nums)
+  (let ((num (car nums)))
+    (let loop ((nums (cdr nums)) (perms '()))
+      (if (or (null? nums)
+              (> (car nums) (+ num 3)))
+          (reverse! perms)
+          (loop (cdr nums) (cons nums perms))))))
+
+(define (count-permutations* cache nums)
+  (let ((perms (permutations nums)))
+    (if (null? perms) 1
+        (apply + (map (lambda (perm)
+                        (count-permutations cache perm))
+                      perms)))))
+
+(define (count-permutations cache nums)
+  (or (hash-table-ref/default cache (car nums) #f)
+      (let ((count (count-permutations* cache nums)))
+        (hash-table-set! cache (car nums) count)
+        count)))
 
 (define (process-joltages-2 numbers)
-  #t)
+  (let* ((nums (cons 0 (list-sort! < numbers)))
+         (cache (make-hash-table number-comparator)))
+    (count-permutations cache nums)))
 
 (run-advent-program
  process-joltages-1
