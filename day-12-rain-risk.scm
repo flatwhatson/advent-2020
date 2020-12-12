@@ -47,10 +47,10 @@
       (if (= i n) d
           (loop (f d) (+ i 1))))))
 
-(define (follow-commands commands)
+(define (follow-ship-commands commands)
   (let loop ((x 0) (y 0) (d 'east) (commands commands))
     (if (null? commands)
-        (values x y d)
+        (values x y)
         (let* ((cmd (caar commands))
                (num (cdar commands))
                (cmds (cdr commands)))
@@ -69,12 +69,48 @@
                 (else
                  (error "Invalid command" cmd)))))))
 
+(define (rotate-waypoint wx wy cmd deg)
+  (cond ((or (and (eq? cmd 'left) (= deg 90))
+             (and (eq? cmd 'right) (= deg 270)))
+         (values (* -1 wy) wx))
+        ((or (and (eq? cmd 'right) (= deg 90))
+             (and (eq? cmd 'left) (= deg 270)))
+         (values wy (* -1 wx)))
+        ((= deg 180)
+         (values (* -1 wx) (* -1 wy)))
+        (else
+         (error "Invalid rotation" cmd deg))))
+
+(define (follow-waypoint-commands commands)
+  (let loop ((sx 0) (sy 0) (wx 10) (wy 1) (commands commands))
+    (if (null? commands)
+        (values sx sy)
+        (let* ((cmd (caar commands))
+               (num (cdar commands))
+               (cmds (cdr commands)))
+          (cond ((eq? cmd 'north)
+                 (loop sx sy wx (+ wy num) cmds))
+                ((eq? cmd 'south)
+                 (loop sx sy wx (- wy num) cmds))
+                ((eq? cmd 'east)
+                 (loop sx sy (+ wx num) wy cmds))
+                ((eq? cmd 'west)
+                 (loop sx sy (- wx num) wy cmds))
+                ((or (eq? cmd 'left) (eq? cmd 'right))
+                 (let-values (((wx wy) (rotate-waypoint wx wy cmd num)))
+                   (loop sx sy wx wy cmds)))
+                ((eq? cmd 'forward)
+                 (loop (+ sx (* num wx)) (+ sy (* num wy)) wx wy cmds))
+                (else
+                 (error "Invalid command" cmd)))))))
+
 (define (process-commmands-1 commands)
-  (let-values (((x y d) (follow-commands commands)))
+  (let-values (((x y) (follow-ship-commands commands)))
     (+ (abs x) (abs y))))
 
-(define (process-commmands-2 commmands)
-  #t)
+(define (process-commmands-2 commands)
+  (let-values (((x y) (follow-waypoint-commands commands)))
+    (+ (abs x) (abs y))))
 
 (run-advent-program
  process-commmands-1
