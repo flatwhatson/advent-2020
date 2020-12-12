@@ -6,12 +6,16 @@
         (advent-utils))
 
 (define (layout-ref l x y)
-  (and (>= x 0)
-       (>= y 0)
-       (< y (vector-length l))
-       (let ((r (vector-ref l y)))
-         (and (< x (string-length r))
-              (string-ref r x)))))
+  (string-ref (vector-ref l y) x))
+
+(define (layout-ref/default l x y default)
+  (or (and (>= x 0)
+           (>= y 0)
+           (< y (vector-length l))
+           (let ((r (vector-ref l y)))
+             (and (< x (string-length r))
+                  (string-ref r x))))
+      default))
 
 (define (layout-set! l x y c)
   (string-set! (vector-ref l y) x c))
@@ -25,63 +29,99 @@
             ((= x last-x)
              (loop 0 (+ y 1) acc))
             (else
-             (loop (+ x 1) y (f x y acc)))))))
+             (let ((c (layout-ref l x y)))
+               (loop (+ x 1) y (f x y c acc))))))))
 
 (define (layout-copy l)
   (vector-map string-copy l))
+
+(define (layout-transform f l1)
+  (let* ((l2 (layout-copy l1))
+         (mod (layout-fold
+               (lambda (x y c mod)
+                 (let ((n (f l1 x y c)))
+                   (if (char=? c n)
+                       mod
+                       (begin
+                         (layout-set! l2 x y n)
+                         (+ mod 1)))))
+               0 l1)))
+    (values l2 mod)))
+
+(define (layout-count l d)
+  (layout-fold (lambda (x y c acc)
+                 (if (char=? c d)
+                     (+ acc 1)
+                     acc))
+               0 l))
 
 (define adjacent-offsets
   '((-1 -1) ( 0 -1) ( 1 -1)
     (-1  0)         ( 1  0)
     (-1  1) ( 0  1) ( 1  1)))
 
-(define (count-adjacent l x y c)
+(define (n-adjacent? l x y c limit)
   (let loop ((offsets adjacent-offsets)
              (count 0))
-    (if (null? offsets)
-        count
-        (let* ((xd (+ x (caar offsets)))
-               (yd (+ y (cadar offsets)))
-               (cd (layout-ref l xd yd)))
-          (loop (cdr offsets)
-                (+ count (if (and cd (char=? c cd)) 1 0)))))))
+    (cond
+     ((= count limit) #t)
+     ((null? offsets) #f)
+     (else (let* ((x1 (+ x (caar offsets)))
+                  (y1 (+ y (cadar offsets)))
+                  (d (layout-ref/default l x1 y1 #f))
+                  (i (if (and d (char=? c d)) 1 0)))
+             (loop (cdr offsets) (+ count i)))))))
 
-(define (count-occupied l x y)
-  (count-adjacent l x y #\#))
+(define (layout-look/default l x y dx dy default)
+  (let loop ((x (+ x dx))
+             (y (+ y dy)))
+    (let ((c (layout-ref/default l x y #f)))
+      (cond ((not c) default)
+            ((not (char=? c #\.)) c)
+            (else (loop (+ x dx) (+ y dy)))))))
 
-(define (next-state l x y)
-  (let ((c (layout-ref l x y)))
-    (cond ((and (char=? c #\L)
-                (zero? (count-occupied l x y)))
-           #\#)
-          ((and (char=? c #\#)
-                (>= (count-occupied l x y) 4))
-           #\L)
-          (else #f))))
+(define (n-visible? l x y c limit)
+  (let loop ((offsets adjacent-offsets)
+             (count 0))
+    (cond
+     ((= count limit) #t)
+     ((null? offsets) #f)
+     (else (let* ((dx (caar offsets))
+                  (dy (cadar offsets))
+                  (d (layout-look/default l x y dx dy #f))
+                  (i (if (and d (char=? c d)) 1 0)))
+             (loop (cdr offsets) (+ count i)))))))
+
+(define (next-state-1 l x y c)
+  (cond ((and (char=? c #\L)
+              (not (n-adjacent? l x y #\# 1)))
+         #\#)
+        ((and (char=? c #\#)
+              (n-adjacent? l x y #\# 4))
+         #\L)
+        (else c)))
+
+(define (next-state-2 l x y c)
+  (cond ((and (char=? c #\L)
+              (not (n-visible? l x y #\# 1)))
+         #\#)
+        ((and (char=? c #\#)
+              (n-visible? l x y #\# 5))
+         #\L)
+        (else c)))
+
+(define (process-layout layout next-state)
+  (let loop ((l1 layout))
+    (let-values (((l2 mod) (layout-transform next-state l1)))
+      (if (zero? mod)
+          (layout-count l1 #\#)
+          (loop l2)))))
 
 (define (process-layout-1 layout)
-  (let loop ((l layout) (iter 0))
-    (let* ((ld (layout-copy l))
-           (mod (layout-fold
-                 (lambda (x y mod)
-                   (let ((next (next-state l x y)))
-                     (if next
-                         (begin
-                           (layout-set! ld x y next)
-                           (+ mod 1))
-                         mod)))
-                 0 l)))
-      (if (zero? mod)
-          (layout-fold
-           (lambda (x y mod)
-             (if (char=? (layout-ref l x y) #\#)
-                 (+ mod 1)
-                 mod))
-           0 l)
-          (loop ld (+ iter 1))))))
+  (process-layout layout next-state-1))
 
 (define (process-layout-2 layout)
-  #t)
+  (process-layout layout next-state-2))
 
 (run-advent-program
  process-layout-1
